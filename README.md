@@ -13,7 +13,7 @@ WordpressのボイラーテンプレートのBedrockの開発環境をDockerに�
 - [x] Docker 19.03.8
 - [x] docker-compose 1.24.0
 
-## 実行(WIP)
+## 実行
 1. `git clone git@git.dmm.com:tajima-kenji/docker-bedrock.git`
 2. `cd docker-bedrock`
 3. `cp .env.template .env`

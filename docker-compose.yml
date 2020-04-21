@@ -6,7 +6,7 @@ services:
     container_name: ${PRODUCT_NAME}_web
     volumes:
       - "./config/nginx/default.conf:/etc/nginx/conf.d/default.conf"
-      - "./bedrock/web:$WP_ROOT_DIR"
+      - "${BEDROCK_DIR}/web:$WP_ROOT_DIR"
       - "./log/web:/var/log/nginx"
       - "./config/nginx/default.template.conf:/etc/nginx/conf.d/default.template"
     ports:
@@ -27,13 +27,13 @@ services:
     container_name: ${PRODUCT_NAME}_php
     volumes:
       - "./config/php/php.ini:/usr/local/etc/php/php.ini"
-      - "./bedrock:/var/www"
-      - "./bedrock/web/:$WP_ROOT_DIR"
+      - "${BEDROCK_DIR}:/var/www"
+      - "${BEDROCK_DIR}/web/:$WP_ROOT_DIR"
     restart: always
   composer:
     image: composer:${VERSION_COMPOSER}
     volumes:
-      - "./bedrock:/app"
+      - "${BEDROCK_DIR}:/app"
     command: install
   db:
     image: mysql:${VERSION_SQL}
