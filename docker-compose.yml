@@ -5,17 +5,18 @@ services:
     image: nginx:${VERSION_NGINX}
     container_name: ${PRODUCT_NAME}_web
     volumes:
-      - "./config/nginx/default.conf:/etc/nginx/conf.d/default.conf"
       - "${BEDROCK_DIR}/web:$WP_ROOT_DIR"
       - "./log/web:/var/log/nginx"
+      - "./config/nginx/default.conf:/etc/nginx/conf.d/default.conf"
       - "./config/nginx/default.template.conf:/etc/nginx/conf.d/default.template"
     ports:
       - "${NGINX_HTTP_PORTS}:80"
       - "${NGINX_HTTPS_PORTS}:443"
-    command: /bin/sh -c "envsubst '$$NGINX_HOST $$WP_ROOT_DIR' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
     environment:
       - NGINX_HOST=${NGINX_HOST}
       - WP_ROOT_DIR=${WP_ROOT_DIR}
+      - UPLOAD_FILESIZE=${UPLOAD_FILESIZE}
+    command: /bin/sh -c "envsubst '$$NGINX_HOST $$WP_ROOT_DIR $$UPLOAD_FILESIZE' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
     depends_on:
       - db
       - php
@@ -30,6 +31,10 @@ services:
       - "${BEDROCK_DIR}:/var/www"
       - "${BEDROCK_DIR}/web/:$WP_ROOT_DIR"
     restart: always
+    environment:
+      - UPLOAD_FILESIZE=${UPLOAD_FILESIZE}
+      - MEMORY_LIMIT=${MEMORY_LIMIT}
+      - MAX_EXECUTION_TIME=${MAX_EXECUTION_TIME}
   composer:
     image: composer:${VERSION_COMPOSER}
     volumes:
