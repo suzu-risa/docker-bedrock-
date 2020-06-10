@@ -57,3 +57,4 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - "./db/data:/var/lib/mysql"
+    user: ${LOCAL_USER}:${LOCAL_GROUP}
