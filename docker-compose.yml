@@ -5,18 +5,20 @@ services:
     image: nginx:${VERSION_NGINX}
     container_name: ${PRODUCT_NAME}_web
     volumes:
-      - "./${BEDROCK_DIR}/web:$WP_ROOT_DIR"
+      - "./${BEDROCK_DIR}:${WP_ROOT_DIR}"
       - "./log/web:/var/log/nginx"
       - "./config/nginx/default.conf:/etc/nginx/conf.d/default.conf"
       - "./config/nginx/default.template.conf:/etc/nginx/conf.d/default.template"
+      - "./certs:/etc/nginx/ssl"
     ports:
       - "${NGINX_HTTP_PORTS}:80"
       - "${NGINX_HTTPS_PORTS}:443"
     environment:
       - NGINX_HOST=${NGINX_HOST}
-      - WP_ROOT_DIR=${WP_ROOT_DIR}
+      - WP_ROOT_DIR=${WP_ROOT_DIR}/web
       - UPLOAD_FILESIZE=${UPLOAD_FILESIZE}
-    command: /bin/sh -c "envsubst '$$NGINX_HOST $$WP_ROOT_DIR $$UPLOAD_FILESIZE' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+      - SSL_KEY=${SSL_KEY}
+    command: /bin/sh -c "envsubst '$$NGINX_HOST $$WP_ROOT_DIR $$UPLOAD_FILESIZE $$SSL_KEY' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
     depends_on:
       - db
       - php
@@ -28,8 +30,7 @@ services:
     container_name: ${PRODUCT_NAME}_php
     volumes:
       - "./config/php/php.ini:/usr/local/etc/php/php.ini"
-      - "./${BEDROCK_DIR}:/var/www"
-      - "./${BEDROCK_DIR}/web/:$WP_ROOT_DIR"
+      - "./${BEDROCK_DIR}:${WP_ROOT_DIR}"
     restart: always
     environment:
       - UPLOAD_FILESIZE=${UPLOAD_FILESIZE}
