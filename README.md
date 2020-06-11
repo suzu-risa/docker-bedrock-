@@ -12,18 +12,23 @@ WordpressのボイラーテンプレートのBedrockの開発環境をDockerに�
 - [x] Windows 10 pro 1909 (not use Hyper-V)
 - [x] Docker 19.03.8
 - [x] docker-compose 1.24.0
+- [x] (mkcert)[https://github.com/FiloSottile/mkcert]
 
 ## 実行
 1. `git clone git@git.dmm.com:tajima-kenji/docker-bedrock.git`
 2. `cd docker-bedrock`
-3. `cp .env.template .env`
-4. edit .env
-5. `cd bedrock`
-6. `cp .env.example .env`
-7. edit .env
-8. `cd ../`
-9. `docker-compose up -d --build`
-10. acsess `${NGINX_HOST}:${NGINX_HTTP_PORTS or NGINX_HTTPS_PORTS}`
+3. `mkcert -install`
+4. `mkdir certs && cd certs`
+5. `mkcert ${localdomain} localhost 127.0.0.1`
+6. `cd ../`
+7. `cp .env.template .env`
+8. edit .env
+9. `cd bedrock`
+10. `cp .env.example .env`
+11. edit .env
+12. `cd ../`
+13. `docker-compose up -d --build`
+14. acsess `${NGINX_HOST}:${NGINX_HTTP_PORTS or NGINX_HTTPS_PORTS}`
 
 ## envの値について
 
@@ -34,8 +39,11 @@ WordpressのボイラーテンプレートのBedrockの開発環境をDockerに�
 - MYSQL_DATABASE: mySQLのデータベース名を指定します。
 - MYSQL_USER: mySQLのユーザーを指定します。
 - MYSQL_PASSWORD: mySQLのパスワードを指定します。
+- LOCAL_USER: 自分のPCのコンソールのユーザーをPIDで指定します
+- LOCAL_GROUP: 自分のPCのコンソールのユーザーのグループをPIDで指定します
 - VERSION_NGINX: nginxのimageのバージョンを指定します。
 - NGINX_HOST: nginxのホスト名を指定します。
+- SSL_KEY: 5.で作成したkeyの.pem と -key.pem の前の名前を指定します
 - NGINX_HTTP_PORTS: nginxにHTTPでアクセスした場合のポートです。
 - NGINX_HTTPS_PORTS: nginxにHTTPSでアクセスした場合のポートです。
 - UPLOAD_FILESIZE: アップロードできるファイルサイズです。
@@ -44,10 +52,14 @@ WordpressのボイラーテンプレートのBedrockの開発環境をDockerに�
 - VERSION_PHP: phpのimageのバージョンを指定します。
 - VERSION_COMPOSER: composerのimageのバージョンを指定します。
 - BEDROCK_DIR: bedrockのディレクトリを指定します。
-- WP_ROOT_DIR: webコンテナ内のwordpressが配置されるディレクトリを指定します。
+- WP_ROOT_DIR: webコンテナ内のbedrockが配置されるディレクトリを指定します。
 
 
 ## ユースケース
+
+- ユーザーとグループのPIDってどうやって出せばいい？
+`id` で自分のPIDが表示されます。
+これを省くとpermissionでmysqlが立ち上がらない…
 
 - Bedrockのcomposerをupdateしたい
 
